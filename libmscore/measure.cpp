@@ -3795,8 +3795,28 @@ void Measure::addSystemTrailer(Measure* nm)
                   Clef* clef = toClef(clefSegment->element(track));
                   if (clef) {
                         clef->setSmall(true);
-                        if (!score()->genCourtesyClef() || repeatEnd() || isFinalMeasure || !clef->showCourtesy())
+                        if (!score()->genCourtesyClef() || isFinalMeasure || !clef->showCourtesy())
                               clef->clear();          // make invisible
+                        
+                        if ( repeatEnd() ) {
+                              // Insert a BarLine before the clef
+                              Segment* destSeg;
+                              BarLine* bl;
+                              destSeg = undoGetSegment(SegmentType::BarLine, clef->rtick());
+
+                              bl = new BarLine(score());
+                              bl->setBarLineType(BarLineType::END_REPEAT);
+                              bl->setPos(QPointF(-1,0));
+                              bl->setTrack(clef->track());
+                              bl->setGenerated(true);
+
+                              destSeg->add(bl);
+                              score()->undo(new AddElement(bl));
+                              bl->layout();
+
+                              // Change Measure End Bar line to Type Normal
+                              setEndBarLineType(BarLineType::NORMAL, track); //Maybe use undoChangeProperty instead?
+                              }
                         }
                   }
             }

@@ -3502,7 +3502,7 @@ void Score::undoChangeKeySig(Staff* ostaff, const Fraction& tick, KeySigEvent ke
 
 void Score::undoChangeClef(Staff* ostaff, Element* e, ClefType ct)
       {
-      bool moveClef = false;
+      bool moveClef = false;        // Should the clef be moved to the previous measure?
       SegmentType st = SegmentType::Clef;
       if (e->isMeasure()) {
             if (toMeasure(e)->prevMeasure())
@@ -3525,7 +3525,7 @@ void Score::undoChangeClef(Staff* ostaff, Element* e, ClefType ct)
       Clef* gclef = 0;
       Fraction tick = e->tick();
       Fraction rtick = e->rtick();
-      bool small = (st == SegmentType::Clef);
+      bool small = (st == SegmentType::Clef);       // Header clefs are larger than regular ones
       for (Staff* staff : ostaff->staffList()) {
             if (staff->staffType(tick)->group() != ClefInfo::staffGroup(ct))
                   continue;
